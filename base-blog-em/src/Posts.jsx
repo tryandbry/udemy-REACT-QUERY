@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 
 import { fetchPosts, deletePost, updatePost } from "./api";
@@ -17,6 +17,19 @@ export function Posts() {
     queryFn: () => fetchPosts(currentPage),
     staleTime: 2000,
   });
+
+  useEffect(() => {
+    if (currentPage >= maxPostPage) {
+      return
+    }
+
+    const nextPage = currentPage + 1;
+    queryClient.prefetchQuery({
+      queryKey: ["posts", nextPage],
+      queryFn: () => fetchPosts(nextPage),
+    })
+  }, [currentPage, queryClient])
+
   if (isLoading) {
     return <h3>Loading...</h3>;
   }
