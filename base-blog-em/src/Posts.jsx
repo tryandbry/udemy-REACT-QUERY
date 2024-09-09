@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 
 import { fetchPosts, deletePost, updatePost } from "./api";
 import { PostDetail } from "./PostDetail";
@@ -9,10 +9,12 @@ export function Posts() {
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedPost, setSelectedPost] = useState(null);
 
+  const queryClient = useQueryClient();
+
   // replace with useQuery
   const { data, isError, error, isLoading } = useQuery({
-    queryKey: ["posts"],
-    queryFn: fetchPosts,
+    queryKey: ["posts", currentPage],
+    queryFn: () => fetchPosts(currentPage),
     staleTime: 2000,
   });
   if (isLoading) {
@@ -41,11 +43,19 @@ export function Posts() {
         ))}
       </ul>
       <div className="pages">
-        <button disabled onClick={() => {}}>
+        <button 
+          disabled={currentPage <= 1}
+          onClick={() => {
+            setCurrentPage((previousValue) => previousValue - 1)
+        }}>
           Previous page
         </button>
         <span>Page {currentPage + 1}</span>
-        <button disabled onClick={() => {}}>
+        <button
+          disabled={currentPage >= maxPostPage}
+          onClick={() => {
+            setCurrentPage((previousValue) => previousValue + 1)
+          }}>
           Next page
         </button>
       </div>
