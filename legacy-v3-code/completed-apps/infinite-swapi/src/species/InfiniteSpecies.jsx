@@ -3,7 +3,8 @@ import { useInfiniteQuery } from "react-query";
 
 import { Species } from "./Species";
 
-const initialUrl = "https://swapi.dev/api/species/";
+const baseUrl = "https://swapi-node.vercel.app";
+const initialUrl = `${baseUrl}/api/species/`;
 const fetchUrl = async (url) => {
   const response = await fetch(url);
   return response.json();
@@ -22,7 +23,9 @@ export function InfiniteSpecies() {
     "sw-species",
     ({ pageParam = initialUrl }) => fetchUrl(pageParam),
     {
-      getNextPageParam: (lastPage) => lastPage.next || undefined,
+      getNextPageParam: (lastPage) => {
+        return lastPage.next ? `${baseUrl}${lastPage.next}` : undefined;
+      }
     }
   );
 
@@ -44,10 +47,10 @@ export function InfiniteSpecies() {
           return pageData.results.map((species) => {
             return (
               <Species
-                key={species.name}
-                name={species.name}
-                language={species.language}
-                averageLifespan={species.average_lifespan}
+                key={species.fields.name}
+                name={species.fields.name}
+                language={species.fields.language}
+                averageLifespan={species.fields.average_lifespan}
               />
             );
           });
