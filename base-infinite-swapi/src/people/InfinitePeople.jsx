@@ -46,7 +46,7 @@ export function InfinitePeople() {
         }}
         hasMore={hasNextPage}
         initialLoad={false}
-      >;
+      >
         {data.pages.map((pageData) => {
           return pageData.results.map(
             (person) => (
